@@ -14,8 +14,10 @@ func (h *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	qValues := r.URL.Query()
 	encQuers := qValues.Encode()
 	qName := r.URL.Query().Get("name")
-	msg := "Hello Handler! URL is " + rURL + " Name is " + name + " Query name is " + qName + " Encoded queries are " + encQuers
+	usName := r.URL.User.Username()
+	msg := "Hello Handler! URI is " + rURL + " Name is " + name + " Query name is " + qName + " Encoded queries are " + encQuers
 	w.Write([]byte(msg))
+	w.Write([]byte("user name is " + usName))
 	//w.Write([]byte(name))
 }
 
