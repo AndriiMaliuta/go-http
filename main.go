@@ -17,9 +17,10 @@ type PersonHandler struct{}
 
 func initDb() *sql.DB {
 	pswd, _ := os.LookupEnv("PSQL_PASS")
-	//db, err := sql.Open("postgres", fmt.Sprintf("postgres://dev2:%s@localhost/cities?sslmode=disable", pswd))
+	hmIP, _ := os.LookupEnv("HM_IP")
+	hmUs, _ := os.LookupEnv("HM_USER")
 	db, err := sql.Open("postgres",
-		fmt.Sprintf("postgres://hostman:%s@94.228.113.90:5439/database?sslmode=disable", pswd))
+		fmt.Sprintf("postgres://%s:%s@%s:5439/database?sslmode=disable", pswd, hmIP))
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -39,7 +40,7 @@ func initDb() *sql.DB {
 //	var err error
 //	pass, _ := os.LookupEnv("PSQL_PASS")
 //	Db, err := sql.Open("postgres",
-//		fmt.Sprintf("postgresql://hostman:%s@94.228.113.90:5439/database?sslmode=false", pass))
+//		fmt.Sprintf("postgresql://hostman:%s@IP:5439/database?sslmode=false", pass))
 //	if err != nil {
 //		log.Panicln(err)
 //	}
@@ -93,7 +94,9 @@ func (p PersonsHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p PersonHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	//httpMethod := r.Method
 	pId := r.URL.Query().Get("id")
+	//id, _ := strconv.Atoi(path.Base(r.URL.Path))
 	atoi, _ := strconv.Atoi(pId)
 	person, _ := json.Marshal(personById(atoi))
 	log.Println("Getting person " + pId)
