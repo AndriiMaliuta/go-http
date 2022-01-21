@@ -7,7 +7,7 @@ Basic HTTP service based on Golang net/http and Postgres SQL stacks. It creates 
 * Cat
 * Car
 
-/persons     - all persons
-/person/{id} - person by ID
-/cats        - all cats
-/cat/{id}    - cat by ID
+- /persons     - all persons
+- /person/{id} - person by ID
+- /cats        - all cats
+- /cat/{id}    - cat by ID
