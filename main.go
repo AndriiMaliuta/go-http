@@ -16,7 +16,7 @@ type PersonsHandle struct{}
 type PersonHandler struct{}
 
 func initDb() *sql.DB {
-	pswd, _ := os.LookupEnv("PSQL_PASS")
+	pswd := os.Getenv("PSQL_PASS")
 	hmIP, _ := os.LookupEnv("HM_IP")
 	hmUs, _ := os.LookupEnv("HM_USER")
 	db, err := sql.Open("postgres",
@@ -122,7 +122,7 @@ func main() {
 	//log.Println(pers)
 	psHandler := PersonsHandle{}
 	pHandler := PersonHandler{}
-	server := http.Server{Addr: "127.0.0.1:8087"}
+	server := http.Server{Addr: "127.0.0.1:8087"} //os.Getenv("PORT")
 	http.Handle("/persons", &psHandler)
 	http.Handle("/person", &pHandler)
 	server.ListenAndServe()
