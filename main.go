@@ -9,10 +9,11 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 type PersonsHandle struct{}
-type WorldHandler struct{}
+type PersonHandler struct{}
 
 func initDb() *sql.DB {
 	pswd, _ := os.LookupEnv("PSQL_PASS")
@@ -45,7 +46,7 @@ func initDb() *sql.DB {
 //	Db.Ping()
 //}
 
-func retrieve() []models.Person {
+func getPersons() []models.Person {
 	db := initDb()
 	//person := models.Person{}
 	rows, err := db.Query("select person_id, name, gender, status from persons")
@@ -66,15 +67,22 @@ func retrieve() []models.Person {
 	return persons
 }
 
+func personById(id int) models.Person {
+	db := initDb()
+	//person := models.Person{}
+	row := db.QueryRow("select person_id, name, gender, status from persons where person_id = $1", id)
+	person := models.Person{}
+	row.Scan(&person.Id, &person.Name, &person.Gender, &person.Status)
+	defer db.Close()
+
+	return person
+}
+
 func (p PersonsHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//rURL := r.RequestURI
-	//name := r.Form.Get("name")
-	//qValues := r.URL.Query()
-	//encQuers := qValues.Encode()
-	//qName := r.URL.Query().Get("name")
 	//usName := r.URL.User.Username()
 	//msg := "Hello Handler! URI is " + rURL + " Name is " + name + " Query name is " + qName + " Encoded queries are " + encQuers
-	persons := retrieve()
+	persons := getPersons()
 	peBytes, err := json.Marshal(persons)
 	if err != nil {
 		log.Panicln(err)
@@ -84,18 +92,21 @@ func (p PersonsHandle) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//w.Write([]byte(name))
 }
 
-func (h *WorldHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "World!")
-	w.Write([]byte("World handler"))
+func (p PersonHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	pId := r.URL.Query().Get("id")
+	atoi, _ := strconv.Atoi(pId)
+	person, _ := json.Marshal(personById(atoi))
+	log.Println("Getting person " + pId)
+	w.Write([]byte(person))
 }
 
 func main() {
-	pers := retrieve()
-	log.Println(pers)
-	pHandler := PersonsHandle{}
-	world := WorldHandler{}
+	//pers := getPersons()
+	//log.Println(pers)
+	psHandler := PersonsHandle{}
+	pHandler := PersonHandler{}
 	server := http.Server{Addr: "127.0.0.1:8087"}
-	http.Handle("/persons", &pHandler)
-	http.Handle("/world", &world)
+	http.Handle("/persons", &psHandler)
+	http.Handle("/person", &pHandler)
 	server.ListenAndServe()
 }
