@@ -20,7 +20,7 @@ func initDb() *sql.DB {
 	hmIP, _ := os.LookupEnv("HM_IP")
 	hmUs, _ := os.LookupEnv("HM_USER")
 	db, err := sql.Open("postgres",
-		fmt.Sprintf("postgres://%s:%s@%s:5439/database?sslmode=disable", pswd, hmIP))
+		fmt.Sprintf("postgres://%s:%s@%s:5439/database?sslmode=disable", hmUs, pswd, hmIP))
 	if err != nil {
 		log.Panicln(err)
 	}
