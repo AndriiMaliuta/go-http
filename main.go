@@ -103,6 +103,20 @@ func (p PersonHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(person))
 }
 
+//func handlePost(w http.ResponseWriter, r *http.Request) (err error) {
+//	len := r.ContentLength
+//	body := make([]byte, len)
+//	r.Body.Read(body)
+//	var person models.Person
+//	json.Unmarshal(body, &person)
+//	err = person.create()
+//	if err != nil {
+//		return
+//	}
+//	w.WriteHeader(200)
+//	return
+//}
+
 func main() {
 	//pers := getPersons()
 	//log.Println(pers)
